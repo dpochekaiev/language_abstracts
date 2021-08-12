@@ -1,0 +1,31 @@
+Как выполнить запрос в цикле:
+Код разделен на две части: в Pre-request script и Tests.
+Создается массив параметров. В Pre-request script части инициируется значение текущей переменной. В разделе Tests назначается следующий запрос после текущего (этот же, никакой (null) или любой другой до или после этого)
+Pre-request script часть:
+-------------------------------------------------
+let parameters = pm.environment.get("parameters");
+
+if (!parameters || parameters.length === 0) {
+    parameters = [		
+        "aaa", 			//массив данных для перебора
+        "bbb", 
+        "ccc"];
+}
+
+let currentParameter = parameters.shift();
+pm.environment.set("currentParameter", currentParameter);
+pm.environment.set("parameters", parameters);
+-------------------------------------------------
+let parameters = pm.environment.get("parameters");
+let currentParameter = pm.environment.get("currentParameter");
+
+if (parameters.length > 0) {
+    postman.setNextRequest("test for a cycle")    // названеи запроса в постмане, куда передается управленеи после этого запроса. Если null - то остановка
+    console.log(parameters);					// строка для дебага
+} else {
+    console.log("deleting parameters variables");	// строка для дебага
+    console.log();									// строки для дебага
+    pm.environment.unset("parameters");
+    pm.environment.unset("currentParameter");
+}
+====================================================
